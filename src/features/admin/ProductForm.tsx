@@ -347,7 +347,7 @@ export const ProductForm = ({ onClose, onSuccess, productToEdit }: ProductFormPr
                                                         type="number"
                                                         step="any"
                                                         min="0"
-                                                        required={discountType !== 'none'}
+                                                        required
                                                         value={discountValue}
                                                         onChange={(e) => setDiscountValue(e.target.value)}
                                                         className={`block w-full ${discountType !== 'percentage' ? 'pl-9' : 'pl-3'} pr-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none`}
