@@ -12,13 +12,7 @@ import { AdminSettings } from './pages/AdminSettings'
 import { About } from './pages/About'
 import { StoreSettingsProvider } from './features/catalogue/StoreSettingsContext'
 
-// Placeholder components
-const AdminDashboard = () => <div className="p-8 pt-6">
-  <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-4">Dashboard</h1>
-  <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 text-slate-500">
-    Welcome to your admin dashboard. Use the sidebar to navigate to Products management.
-  </div>
-</div>
+import { AdminDashboard } from './pages/AdminDashboard'
 
 function App() {
   return (
