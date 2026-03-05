@@ -68,7 +68,11 @@ export const ImportCSVForm = ({ onClose, onSuccess }: ImportCSVFormProps) => {
             const validRecords = chunk.map((row, index) => {
                 const rowIndex = i + index + 2; // +2 for humanity (1-index + header row)
 
-                if (!row.sku || !row.name || !row.price) {
+                // Skip completely empty rows that Excel sometimes generates
+                const isRowEmpty = Object.keys(row).length === 0 || Object.values(row).every(val => val === null || val === undefined || val === '');
+                if (isRowEmpty) return null;
+
+                if (!row.sku || !row.name || row.price === undefined || row.price === null || row.price === '') {
                     errors.push({ row: rowIndex, message: `Missing required fields (sku, name, or price)` });
                     failedCount++;
                     return null;
@@ -106,30 +110,44 @@ export const ImportCSVForm = ({ onClose, onSuccess }: ImportCSVFormProps) => {
                     finalDiscountPrice = 0;
                 }
 
-                return {
-                    sku: row.sku.toString().trim(),
-                    name: row.name.toString().trim(),
-                    price: basePrice,
+                return Object.keys(row).length === 0 ? null : {
+                    sku: row.sku ? row.sku.toString().trim() : '',
+                    name: row.name ? row.name.toString().trim() : '',
+                    price: Number.isNaN(basePrice) ? 0 : basePrice,
                     discount_price: finalDiscountPrice,
                     barcode: row.barcode ? row.barcode.toString().trim() : null,
                     brand: row.brand ? row.brand.toString().trim() : null,
                     category: row.category ? row.category.toString().trim() : null
                 };
-            }).filter(Boolean);
+            }).filter(Boolean) as any[];
 
             if (validRecords.length > 0) {
+                // Deduplicate within the batch (keep the last occurrence of a SKU) to prevent "cannot affect row a second time"
+                const uniqueRecordsMap = new Map();
+                for (const record of validRecords) {
+                    if (record.sku && record.name && record.price > 0) {
+                        uniqueRecordsMap.set(record.sku, record);
+                    } else {
+                        // Missing required fields after parsing (like price being 0 or NaN)
+                        errors.push({ row: i + 2, message: `SKU ${record.sku || 'N/A'} is missing a valid Name or Price.` });
+                        failedCount++;
+                    }
+                }
+
+                const deduplicatedRecords = Array.from(uniqueRecordsMap.values());
+
                 // Utilizing Upsert (ON CONFLICT SKU DO UPDATE)
                 const { error } = await supabase
                     .from('products')
-                    .upsert(validRecords, { onConflict: 'sku' });
+                    .upsert(deduplicatedRecords, { onConflict: 'sku' });
 
                 if (error) {
                     // If batch fails, we record the error.
-                    // A more robust system would retry individually, but this is a solid V1
                     errors.push({ row: i + 2, message: `Batch upsert failed: ${error.message}` });
                     failedCount += validRecords.length;
                 } else {
-                    successCount += validRecords.length;
+                    successCount += deduplicatedRecords.length;
+                    failedCount += (validRecords.length - deduplicatedRecords.length); // Track duplicates as failed/skipped
                 }
             }
         }
