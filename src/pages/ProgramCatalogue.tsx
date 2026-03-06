@@ -52,26 +52,41 @@ export const ProgramCatalogue = () => {
     }, [programId]);
 
     useEffect(() => {
-        // Fetch unique categories and brands for the SKUs in this program
-        const fetchFilters = async () => {
+        // Fetch unique categories and brands for the SKUs in this program, filtered by other active filters
+        const fetchFilterOptions = async () => {
             if (!program || !program.skus || program.skus.length === 0) return;
             try {
-                const { data } = await supabase
-                    .from('products')
-                    .select('category, brand')
-                    .in('sku', program.skus);
-                if (data) {
-                    const uniqueCategories = Array.from(new Set(data.map(p => p.category).filter(Boolean))) as string[];
-                    const uniqueBrands = Array.from(new Set(data.map(p => p.brand).filter(Boolean))) as string[];
-                    setCategories(uniqueCategories.sort());
+                // Fetch valid categories based on current brand and search within program skus
+                let catQuery = supabase.from('products').select('category').in('sku', program.skus);
+                if (brandFilter) catQuery = catQuery.eq('brand', brandFilter);
+                if (searchQuery.trim()) catQuery = catQuery.or(`name.ilike.%${searchQuery}%,sku.ilike.%${searchQuery}%`);
+
+                const { data: catData } = await catQuery;
+                if (catData) {
+                    const uniqueCats = Array.from(new Set(catData.map(p => p.category).filter(Boolean))) as string[];
+                    setCategories(uniqueCats.sort());
+                }
+
+                // Fetch valid brands based on current category and search within program skus
+                let brandQuery = supabase.from('products').select('brand').in('sku', program.skus);
+                if (categoryFilter) brandQuery = brandQuery.eq('category', categoryFilter);
+                if (searchQuery.trim()) brandQuery = brandQuery.or(`name.ilike.%${searchQuery}%,sku.ilike.%${searchQuery}%`);
+
+                const { data: brandData } = await brandQuery;
+                if (brandData) {
+                    const uniqueBrands = Array.from(new Set(brandData.map(p => p.brand).filter(Boolean))) as string[];
                     setBrands(uniqueBrands.sort());
                 }
             } catch (err) {
-                console.error("Failed to load filters", err);
+                console.error("Failed to load dynamic filters", err);
             }
         };
-        fetchFilters();
-    }, [program]);
+
+        const timeoutId = setTimeout(() => {
+            fetchFilterOptions();
+        }, 300);
+        return () => clearTimeout(timeoutId);
+    }, [program, searchQuery, categoryFilter, brandFilter]);
 
     useEffect(() => {
         // Reset page and debounce search slightly for better performance

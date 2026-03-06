@@ -26,27 +26,40 @@ export const Catalogue = () => {
     const [brands, setBrands] = useState<string[]>([]);
 
     useEffect(() => {
-        // Fetch unique categories and brands on mount
-        const fetchFilters = async () => {
+        // Fetch valid options for the filters dynamically based on current selections
+        const fetchFilterOptions = async () => {
             try {
-                // In a production app with thousands of rows, you'd maintain a separate table or use an RPC
-                // For this demo, we can just fetch distinct values if the dataset isn't massive yet.
-                // We'll use a simple select for now, but group by in Supabase requires RPC.
-                // As a workaround, we'll fetch a batch and extract unique, or just rely on manual input.
-                // Actually, let's fetch products and extract unique non-null brands/categories.
-                const { data } = await supabase.from('products').select('category, brand').limit(1000);
-                if (data) {
-                    const uniqueCategories = Array.from(new Set(data.map(p => p.category).filter(Boolean))) as string[];
-                    const uniqueBrands = Array.from(new Set(data.map(p => p.brand).filter(Boolean))) as string[];
-                    setCategories(uniqueCategories.sort());
+                // Fetch valid categories based on current brand and search
+                let catQuery = supabase.from('products').select('category');
+                if (brandFilter) catQuery = catQuery.eq('brand', brandFilter);
+                if (searchQuery.trim()) catQuery = catQuery.or(`name.ilike.%${searchQuery}%,sku.ilike.%${searchQuery}%`);
+
+                const { data: catData } = await catQuery.limit(1000);
+                if (catData) {
+                    const uniqueCats = Array.from(new Set(catData.map(p => p.category).filter(Boolean))) as string[];
+                    setCategories(uniqueCats.sort());
+                }
+
+                // Fetch valid brands based on current category and search
+                let brandQuery = supabase.from('products').select('brand');
+                if (categoryFilter) brandQuery = brandQuery.eq('category', categoryFilter);
+                if (searchQuery.trim()) brandQuery = brandQuery.or(`name.ilike.%${searchQuery}%,sku.ilike.%${searchQuery}%`);
+
+                const { data: brandData } = await brandQuery.limit(1000);
+                if (brandData) {
+                    const uniqueBrands = Array.from(new Set(brandData.map(p => p.brand).filter(Boolean))) as string[];
                     setBrands(uniqueBrands.sort());
                 }
             } catch (err) {
-                console.error("Failed to load filters", err);
+                console.error("Failed to load dynamic filters", err);
             }
         };
-        fetchFilters();
-    }, []);
+
+        const timeoutId = setTimeout(() => {
+            fetchFilterOptions();
+        }, 300);
+        return () => clearTimeout(timeoutId);
+    }, [searchQuery, categoryFilter, brandFilter]);
 
     useEffect(() => {
         // Reset page and debounce search slightly for better performance
