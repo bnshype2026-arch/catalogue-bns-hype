@@ -4,6 +4,8 @@ import { ShoppingBag, Menu, X, Instagram, Info, Home, Tag } from 'lucide-react'
 import { useStoreSettings } from '../../features/catalogue/StoreSettingsContext'
 import { supabase } from '../../lib/supabase'
 import type { Program } from '../../types/program'
+import { BackgroundParticles } from '../BackgroundParticles'
+
 
 export const CatalogueLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
@@ -43,6 +45,8 @@ export const CatalogueLayout = () => {
         <div className="min-h-screen flex flex-col bg-background relative selection:bg-black selection:text-white">
             {/* Animated Grid Background */}
             <div className="bg-grid-pattern" />
+            <BackgroundParticles />
+
             {/* Sidebar Dark Overlay (Mobile Only) */}
             {isSidebarOpen && (
                 <div

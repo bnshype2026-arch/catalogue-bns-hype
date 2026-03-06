@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { LayoutDashboard, Package, LogOut, Settings, Tag, Menu, X } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
+import { BackgroundParticles } from '../BackgroundParticles'
+
 
 export const AdminLayout = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -15,6 +17,8 @@ export const AdminLayout = () => {
         <div className="min-h-screen bg-muted/30 flex relative overflow-hidden">
             {/* Animated Grid Background */}
             <div className="bg-grid-pattern" />
+            <BackgroundParticles />
+
             {/* Sidebar sidebar */}
             <aside className="w-64 bg-surface border-r border-border hidden md:flex flex-col">
                 <div className="p-6">

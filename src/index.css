@@ -15,27 +15,34 @@
     inset: 0;
     pointer-events: none;
     z-index: 0;
-    background-size: 50px 50px;
+    background-size: 80px 80px;
     background-image:
-      linear-gradient(to right, rgba(0, 0, 0, 0.07) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0, 0, 0, 0.07) 1px, transparent 1px);
-    mask-image: radial-gradient(circle at center, black, transparent 95%);
-    animation: grid-float 10s ease-in-out infinite;
+      linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    mask-image: radial-gradient(circle at center, black, transparent 90%);
   }
 
-  @keyframes grid-float {
+  .bg-grid-pattern::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(to right, transparent, rgba(0, 0, 0, 0.1) 50%, transparent),
+      linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.1) 50%, transparent);
+    background-size: 200% 200%;
+    animation: grid-glow 8s linear infinite;
+    opacity: 0.5;
+  }
+
+  @keyframes grid-glow {
     0% {
-      transform: translateY(0) scale(1);
+      background-position: -200% -200%;
     }
-
-    50% {
-      transform: translateY(-15px) scale(1.02);
-    }
-
     100% {
-      transform: translateY(0) scale(1);
+      background-position: 200% 200%;
     }
   }
+
 
   h1,
   h2,
