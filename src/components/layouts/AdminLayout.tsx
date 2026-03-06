@@ -12,7 +12,9 @@ export const AdminLayout = () => {
         navigate('/admin/login');
     };
     return (
-        <div className="min-h-screen bg-muted/30 flex">
+        <div className="min-h-screen bg-muted/30 flex relative overflow-hidden">
+            {/* Animated Grid Background */}
+            <div className="bg-grid-pattern" />
             {/* Sidebar sidebar */}
             <aside className="w-64 bg-surface border-r border-border hidden md:flex flex-col">
                 <div className="p-6">

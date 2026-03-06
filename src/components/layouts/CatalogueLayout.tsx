@@ -42,7 +42,7 @@ export const CatalogueLayout = () => {
     return (
         <div className="min-h-screen flex flex-col bg-background relative selection:bg-black selection:text-white">
             {/* Animated Grid Background */}
-            <div className="fixed inset-0 pointer-events-none z-0 bg-grid-pattern opacity-50" />
+            <div className="bg-grid-pattern" />
             {/* Sidebar Dark Overlay (Mobile Only) */}
             {isSidebarOpen && (
                 <div
