@@ -158,15 +158,22 @@ export const CatalogueLayout = () => {
                         </Link>
                     </div>
 
-                    {/* Right: Search */}
-                    <div className="flex justify-end items-center gap-2 sm:gap-4">
-                        <div className="relative w-full max-w-[140px] sm:max-w-[260px]">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Search size={14} className="text-zinc-500 sm:size-4" />
+                    {/* Right: Spacer */}
+                    <div className="flex justify-end items-center" />
+                </div>
+            </header>
+
+            {/* Floating Bottom Search Bar */}
+            {!location.pathname.startsWith('/product/') && (
+                <div className="fixed bottom-6 left-0 right-0 z-40 px-4 sm:px-6 pointer-events-none">
+                    <div className="max-w-7xl mx-auto flex justify-center">
+                        <div className="relative w-full max-w-3xl pointer-events-auto">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <Search size={20} className="text-zinc-400" />
                             </div>
                             <input
                                 type="text"
-                                placeholder="Search..."
+                                placeholder="Search catalogue..."
                                 value={location.pathname === '/' ? new URLSearchParams(location.search).get('q') || '' : ''}
                                 onChange={(e) => {
                                     if (location.pathname === '/') {
@@ -180,12 +187,12 @@ export const CatalogueLayout = () => {
                                         window.location.href = `/?q=${encodeURIComponent(e.target.value)}`;
                                     }
                                 }}
-                                className="block w-full pl-8 sm:pl-9 pr-3 sm:pr-4 py-1.5 sm:py-2.5 bg-black border border-white/10 rounded-lg sm:rounded-xl text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all font-medium"
+                                className="block w-full pl-12 pr-6 py-4 bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl text-base text-white placeholder-zinc-500 shadow-2xl focus:outline-none focus:ring-2 focus:ring-white/20 transition-all font-medium"
                             />
                         </div>
                     </div>
                 </div>
-            </header>
+            )}
 
             {/* Main Content Area */}
             <main className={`flex-1 w-full transition-all duration-300 ease-in-out ${isSidebarOpen ? 'lg:pl-[280px]' : 'pl-0'}`}>

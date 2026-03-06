@@ -21,7 +21,9 @@ export const BackgroundParticles: React.FC = () => {
 
     let animationFrameId: number;
     let particles: Particle[] = [];
+    let glowOrbs: Particle[] = [];
     const particleCount = 40;
+    const orbCount = 15;
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
@@ -31,6 +33,9 @@ export const BackgroundParticles: React.FC = () => {
 
     const initParticles = () => {
       particles = [];
+      glowOrbs = [];
+
+      // Standard sharp particles
       for (let i = 0; i < particleCount; i++) {
         particles.push({
           x: Math.random() * canvas.width,
@@ -41,11 +46,44 @@ export const BackgroundParticles: React.FC = () => {
           opacity: Math.random() * 0.5 + 0.1,
         });
       }
+
+      // Large glow orbs
+      for (let i = 0; i < orbCount; i++) {
+        glowOrbs.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: Math.random() * 100 + 50,
+          speedX: (Math.random() - 0.5) * 0.2,
+          speedY: (Math.random() - 0.5) * 0.2,
+          opacity: Math.random() * 0.05 + 0.02,
+        });
+      }
     };
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
+      // Draw Glow Orbs first (background layer)
+      glowOrbs.forEach((orb) => {
+        orb.x += orb.speedX;
+        orb.y += orb.speedY;
+
+        if (orb.x < -orb.size) orb.x = canvas.width + orb.size;
+        if (orb.x > canvas.width + orb.size) orb.x = -orb.size;
+        if (orb.y < -orb.size) orb.y = canvas.height + orb.size;
+        if (orb.y > canvas.height + orb.size) orb.y = -orb.size;
+
+        const gradient = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.size);
+        gradient.addColorStop(0, `rgba(148, 163, 184, ${orb.opacity})`); // slate-400
+        gradient.addColorStop(1, 'rgba(148, 163, 184, 0)');
+
+        ctx.beginPath();
+        ctx.arc(orb.x, orb.y, orb.size, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      });
+
+      // Draw standard particles
       particles.forEach((p) => {
         p.x += p.speedX;
         p.y += p.speedY;
@@ -57,7 +95,7 @@ export const BackgroundParticles: React.FC = () => {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(100, 116, 139, ${p.opacity})`; // slate-500ish
+        ctx.fillStyle = `rgba(100, 116, 139, ${p.opacity})`;
         ctx.fill();
       });
 

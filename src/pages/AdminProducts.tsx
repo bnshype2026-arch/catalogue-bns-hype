@@ -51,6 +51,7 @@ export const AdminProducts = () => {
             else setPrograms(programsData || []);
 
             // Format the images array since postgrest might return slightly differently
+            console.log('AdminProducts: Fetched products sample:', data ? data[0] : 'null');
             setProducts(data as any);
         } catch (error) {
             console.error('Error fetching products:', error);
