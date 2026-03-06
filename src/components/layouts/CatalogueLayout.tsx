@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
-
 import { ShoppingBag, Menu, X, Instagram, Info, Home, Tag, Search } from 'lucide-react'
-
 import { useStoreSettings } from '../../features/catalogue/StoreSettingsContext'
 import { supabase } from '../../lib/supabase'
 import type { Program } from '../../types/program'
 import { BackgroundParticles } from '../BackgroundParticles'
-
 
 export const CatalogueLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
@@ -143,24 +140,19 @@ export const CatalogueLayout = () => {
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setIsSidebarOpen(true)}
-                            className="p-2 -ml-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors"
+                            className="p-2 -ml-2 bg-black text-white hover:bg-zinc-800 rounded-lg transition-colors shadow-md"
                         >
                             <Menu size={24} />
                         </button>
-                        <div className="hidden sm:flex items-center gap-2">
-                            <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-white shadow-lg">
-                                <ShoppingBag size={20} />
-                            </div>
-                        </div>
                     </div>
 
                     {/* Center: Title */}
                     <div className="flex flex-col items-center justify-center text-center">
                         <Link to="/" className="group">
-                            <h1 className="font-display font-black text-xl sm:text-2xl tracking-[0.15em] leading-none text-foreground uppercase italic animate-glow-text animate-shimmer">
+                            <h1 className="font-display font-black text-2xl sm:text-3xl tracking-[0.2em] leading-none text-foreground uppercase italic animate-glow-text animate-shimmer">
                                 BNS HYPE
                             </h1>
-                            <p className="text-[10px] sm:text-xs text-slate-500 font-bold uppercase tracking-[0.3em] mt-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                            <p className="text-[10px] sm:text-xs text-slate-500 font-black uppercase tracking-[0.4em] mt-1 opacity-80 group-hover:opacity-100 transition-opacity">
                                 Catalogue
                             </p>
                         </Link>
@@ -168,13 +160,13 @@ export const CatalogueLayout = () => {
 
                     {/* Right: Search */}
                     <div className="flex justify-end items-center gap-4">
-                        <div className="relative hidden md:block w-full max-w-[240px]">
+                        <div className="relative hidden md:block w-full max-w-[260px]">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Search size={16} className="text-slate-400" />
+                                <Search size={16} className="text-zinc-500" />
                             </div>
                             <input
                                 type="text"
-                                placeholder="Search..."
+                                placeholder="Search catalogue..."
                                 value={location.pathname === '/' ? new URLSearchParams(location.search).get('q') || '' : ''}
                                 onChange={(e) => {
                                     if (location.pathname === '/') {
@@ -183,17 +175,14 @@ export const CatalogueLayout = () => {
                                         else params.delete('q');
                                         params.set('page', '1');
                                         window.history.replaceState(null, '', `?${params.toString()}`);
-                                        // Trigger a custom event or rely on URL sync in Catalogue.tsx
                                         window.dispatchEvent(new Event('popstate'));
                                     } else {
-                                        // If not on home, navigate to home with search
                                         window.location.href = `/?q=${encodeURIComponent(e.target.value)}`;
                                     }
                                 }}
-                                className="block w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-full text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all"
+                                className="block w-full pl-9 pr-4 py-2.5 bg-black border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all font-medium"
                             />
                         </div>
-                        {/* Mobile Search Icon Toggle could go here if needed, but keeping it simple for now */}
                     </div>
                 </div>
             </header>
@@ -209,6 +198,5 @@ export const CatalogueLayout = () => {
                 <p>&copy; {new Date().getFullYear()} PT. Stakom Trijaya Andala. All rights reserved.</p>
             </footer>
         </div>
-    )
-}
-
+    );
+};
