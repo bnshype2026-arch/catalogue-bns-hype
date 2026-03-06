@@ -279,7 +279,7 @@ export const AdminDashboard = () => {
                     <p className="text-sm text-muted-foreground mb-6">These are the product item pages receiving the most traffic.</p>
                     {topProducts.length > 0 ? (
                         <div className="space-y-3">
-                            {topProducts.map((item: any, index) => {
+                            {topProducts.map((item: any) => {
                                 const product = item.product;
                                 const primaryImage = product?.images?.find((img: any) => img.display_order === 0) || product?.images?.[0];
 
