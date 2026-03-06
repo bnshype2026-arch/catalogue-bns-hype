@@ -17,9 +17,8 @@ export const Catalogue = () => {
     const brandFilter = searchParams.get('brand') || '';
     const sortOption = (searchParams.get('sort') as any) || 'newest';
 
-    const categoryFilter = searchParams.get('category') || '';
-
     const setCategoryFilter = (val: string) => {
+
         const newParams = new URLSearchParams(searchParams);
         if (val) newParams.set('category', val);
         else newParams.delete('category');
