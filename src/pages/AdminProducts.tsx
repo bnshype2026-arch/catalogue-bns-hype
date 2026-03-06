@@ -15,6 +15,8 @@ export const AdminProducts = () => {
     const [isCSVOpen, setIsCSVOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<ProductWithImages | null>(null);
     const [programs, setPrograms] = useState<any[]>([]);
+    const [imageFilter, setImageFilter] = useState<'all' | 'with_images' | 'no_images'>('all');
+
 
     // Sorting
     const [sortColumn, setSortColumn] = useState<string>('updated_at');
@@ -194,7 +196,20 @@ export const AdminProducts = () => {
                             className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow bg-slate-50 hover:bg-white"
                         />
                     </div>
+
+                    <div className="flex gap-2">
+                        <select
+                            value={imageFilter}
+                            onChange={(e) => setImageFilter(e.target.value as any)}
+                            className="bg-white border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 transition-colors hover:bg-slate-50"
+                        >
+                            <option value="all">All Status</option>
+                            <option value="with_images">With Images</option>
+                            <option value="no_images">No Images</option>
+                        </select>
+                    </div>
                 </div>
+
 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
@@ -226,7 +241,12 @@ export const AdminProducts = () => {
                                         </div>
                                     </td>
                                 </tr>
-                            ) : products.length === 0 ? (
+                            ) : products.filter(p => {
+                                const hasImages = p.images && p.images.length > 0;
+                                if (imageFilter === 'with_images') return hasImages;
+                                if (imageFilter === 'no_images') return !hasImages;
+                                return true;
+                            }).length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
                                         <div className="flex flex-col items-center justify-center">
@@ -234,88 +254,96 @@ export const AdminProducts = () => {
                                                 <Search size={20} className="text-slate-400" />
                                             </div>
                                             <p className="text-sm font-medium text-slate-900">No products found</p>
-                                            <p className="text-sm mt-1">Get started by creating a new product or importing a CSV.</p>
+                                            <p className="text-sm mt-1">Try adjusting your search or filters.</p>
                                         </div>
                                     </td>
                                 </tr>
                             ) : (
-                                products.map((product) => {
-                                    const primaryImage = product.images?.find((img: any) => img.display_order === 0) || product.images?.[0];
+                                products
+                                    .filter(p => {
+                                        const hasImages = p.images && p.images.length > 0;
+                                        if (imageFilter === 'with_images') return hasImages;
+                                        if (imageFilter === 'no_images') return !hasImages;
+                                        return true;
+                                    })
+                                    .map((product) => {
 
-                                    return (
-                                        <tr key={product.id} className="hover:bg-slate-50 transition-colors group">
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-md bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden flex-shrink-0">
-                                                        {primaryImage ? (
-                                                            // We construct the public URL for the Supabase Storage bucket
-                                                            <img
-                                                                src={supabase.storage.from('product-images').getPublicUrl(primaryImage.image_url).data.publicUrl}
-                                                                alt={product.name}
-                                                                className="w-full h-full object-cover"
-                                                            />
-                                                        ) : (
-                                                            <span className="text-xs text-slate-400 font-medium tracking-tight">NO IMG</span>
-                                                        )}
+                                        const primaryImage = product.images?.find((img: any) => img.display_order === 0) || product.images?.[0];
+
+                                        return (
+                                            <tr key={product.id} className="hover:bg-slate-50 transition-colors group">
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-12 h-12 rounded-md bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                                            {primaryImage ? (
+                                                                // We construct the public URL for the Supabase Storage bucket
+                                                                <img
+                                                                    src={supabase.storage.from('product-images').getPublicUrl(primaryImage.image_url).data.publicUrl}
+                                                                    alt={product.name}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            ) : (
+                                                                <span className="text-xs text-slate-400 font-medium tracking-tight">NO IMG</span>
+                                                            )}
+                                                        </div>
+                                                        <div className="font-medium text-slate-900 text-sm line-clamp-2">
+                                                            {product.name}
+                                                        </div>
+                                                        <div className="flex gap-2 mt-1">
+                                                            {product.brand && <span className="text-[10px] font-medium text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">{product.brand}</span>}
+                                                            {product.category && <span className="text-[10px] font-medium text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">{product.category}</span>}
+                                                        </div>
                                                     </div>
-                                                    <div className="font-medium text-slate-900 text-sm line-clamp-2">
-                                                        {product.name}
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-slate-500 font-mono">
+                                                    {product.sku}
+                                                </td>
+                                                <td className="px-6 py-4 text-sm">
+                                                    {product.discount_price ? (
+                                                        <div>
+                                                            <span className="font-medium text-slate-900">{formatIDR(product.discount_price)}</span>
+                                                            <span className="text-xs line-through text-red-500 ml-2">{formatIDR(product.price)}</span>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="font-medium text-slate-900">{formatIDR(product.price)}</span>
+                                                    )}
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                    {new Date((product as any).updated_at).toLocaleDateString(undefined, {
+                                                        year: 'numeric',
+                                                        month: 'short',
+                                                        day: 'numeric'
+                                                    })}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20">
+                                                        Active
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <div className="flex justify-end gap-2">
+                                                        <button
+                                                            onClick={() => {
+                                                                setEditingProduct(product);
+                                                                setIsFormOpen(true);
+                                                            }}
+                                                            className="text-slate-400 hover:text-indigo-600 p-1.5 rounded-md hover:bg-slate-100 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                                            title="Edit Product"
+                                                        >
+                                                            <Edit size={16} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => deleteProduct(product.id)}
+                                                            className="text-slate-400 hover:text-red-600 p-1.5 rounded-md hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                                            title="Delete Product"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
                                                     </div>
-                                                    <div className="flex gap-2 mt-1">
-                                                        {product.brand && <span className="text-[10px] font-medium text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">{product.brand}</span>}
-                                                        {product.category && <span className="text-[10px] font-medium text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">{product.category}</span>}
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-slate-500 font-mono">
-                                                {product.sku}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm">
-                                                {product.discount_price ? (
-                                                    <div>
-                                                        <span className="font-medium text-slate-900">{formatIDR(product.discount_price)}</span>
-                                                        <span className="text-xs line-through text-red-500 ml-2">{formatIDR(product.price)}</span>
-                                                    </div>
-                                                ) : (
-                                                    <span className="font-medium text-slate-900">{formatIDR(product.price)}</span>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-slate-500 whitespace-nowrap">
-                                                {new Date((product as any).updated_at).toLocaleDateString(undefined, {
-                                                    year: 'numeric',
-                                                    month: 'short',
-                                                    day: 'numeric'
-                                                })}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20">
-                                                    Active
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <div className="flex justify-end gap-2">
-                                                    <button
-                                                        onClick={() => {
-                                                            setEditingProduct(product);
-                                                            setIsFormOpen(true);
-                                                        }}
-                                                        className="text-slate-400 hover:text-indigo-600 p-1.5 rounded-md hover:bg-slate-100 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
-                                                        title="Edit Product"
-                                                    >
-                                                        <Edit size={16} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => deleteProduct(product.id)}
-                                                        className="text-slate-400 hover:text-red-600 p-1.5 rounded-md hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
-                                                        title="Delete Product"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
                             )}
                         </tbody>
                     </table>

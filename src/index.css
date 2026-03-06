@@ -26,7 +26,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background-image: 
+    background-image:
       linear-gradient(to right, transparent, rgba(0, 0, 0, 0.1) 50%, transparent),
       linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.1) 50%, transparent);
     background-size: 200% 200%;
@@ -38,6 +38,7 @@
     0% {
       background-position: -200% -200%;
     }
+
     100% {
       background-position: 200% 200%;
     }
@@ -70,5 +71,37 @@
   /* Smooth transitions for hover effects */
   .hover-card {
     @apply transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-premium;
+  }
+
+  .animate-glow-text {
+    animation: text-glow 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes text-glow {
+    from {
+      text-shadow: 0 0 2px rgba(255, 255, 255, 0.1), 0 0 4px rgba(255, 255, 255, 0.05);
+    }
+
+    to {
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg,
+        #000 0%,
+        #555 50%,
+        #000 100%);
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shimmer 5s linear infinite;
+  }
+
+  @keyframes shimmer {
+    to {
+      background-position: 200% center;
+    }
   }
 }

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
-import { ShoppingBag, Menu, X, Instagram, Info, Home, Tag } from 'lucide-react'
+
+import { ShoppingBag, Menu, X, Instagram, Info, Home, Tag, Search } from 'lucide-react'
+
 import { useStoreSettings } from '../../features/catalogue/StoreSettingsContext'
 import { supabase } from '../../lib/supabase'
 import type { Program } from '../../types/program'
@@ -135,23 +137,63 @@ export const CatalogueLayout = () => {
             </div>
 
             {/* Premium Minimal Header */}
-            <header className="sticky top-0 z-30 glass px-4 sm:px-6 py-4 flex items-center justify-between border-b border-border shadow-sm">
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => setIsSidebarOpen(true)}
-                        className="p-2 -ml-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors"
-                    >
-                        <Menu size={24} />
-                    </button>
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-900 flex items-center justify-center text-white">
-                            <ShoppingBag size={16} className="sm:hidden" />
-                            <ShoppingBag size={20} className="hidden sm:block" />
+            <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md px-4 sm:px-6 py-4 border-b border-border shadow-sm">
+                <div className="max-w-7xl mx-auto grid grid-cols-3 items-center">
+                    {/* Left: Menu & Brand Icon */}
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setIsSidebarOpen(true)}
+                            className="p-2 -ml-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors"
+                        >
+                            <Menu size={24} />
+                        </button>
+                        <div className="hidden sm:flex items-center gap-2">
+                            <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-white shadow-lg">
+                                <ShoppingBag size={20} />
+                            </div>
                         </div>
-                        <div>
-                            <h1 className="font-display font-bold text-lg sm:text-xl tracking-tight leading-none text-foreground">BNS HYPE</h1>
-                            <p className="text-[10px] sm:text-xs text-slate-500 font-medium uppercase tracking-wider">Catalogue</p>
+                    </div>
+
+                    {/* Center: Title */}
+                    <div className="flex flex-col items-center justify-center text-center">
+                        <Link to="/" className="group">
+                            <h1 className="font-display font-black text-xl sm:text-2xl tracking-[0.15em] leading-none text-foreground uppercase italic animate-glow-text animate-shimmer">
+                                BNS HYPE
+                            </h1>
+                            <p className="text-[10px] sm:text-xs text-slate-500 font-bold uppercase tracking-[0.3em] mt-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                                Catalogue
+                            </p>
+                        </Link>
+                    </div>
+
+                    {/* Right: Search */}
+                    <div className="flex justify-end items-center gap-4">
+                        <div className="relative hidden md:block w-full max-w-[240px]">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Search size={16} className="text-slate-400" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                value={location.pathname === '/' ? new URLSearchParams(location.search).get('q') || '' : ''}
+                                onChange={(e) => {
+                                    if (location.pathname === '/') {
+                                        const params = new URLSearchParams(location.search);
+                                        if (e.target.value) params.set('q', e.target.value);
+                                        else params.delete('q');
+                                        params.set('page', '1');
+                                        window.history.replaceState(null, '', `?${params.toString()}`);
+                                        // Trigger a custom event or rely on URL sync in Catalogue.tsx
+                                        window.dispatchEvent(new Event('popstate'));
+                                    } else {
+                                        // If not on home, navigate to home with search
+                                        window.location.href = `/?q=${encodeURIComponent(e.target.value)}`;
+                                    }
+                                }}
+                                className="block w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-full text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all"
+                            />
                         </div>
+                        {/* Mobile Search Icon Toggle could go here if needed, but keeping it simple for now */}
                     </div>
                 </div>
             </header>
@@ -169,3 +211,4 @@ export const CatalogueLayout = () => {
         </div>
     )
 }
+

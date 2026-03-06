@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Lock, Mail, Loader2 } from 'lucide-react'
+import { BackgroundParticles } from '../components/BackgroundParticles'
+
 
 export const AdminLogin = () => {
     const [email, setEmail] = useState('')
@@ -37,6 +39,8 @@ export const AdminLogin = () => {
         <div className="min-h-screen bg-background flex items-center justify-center p-4 animate-fade-in relative overflow-hidden">
             {/* Animated Grid Background */}
             <div className="bg-grid-pattern" />
+            <BackgroundParticles />
+
             <div className="max-w-md w-full glass rounded-2xl p-8 shadow-premium border border-border">
                 <div className="text-center mb-8">
                     <div className="w-16 h-16 bg-foreground rounded-2xl mx-auto flex items-center justify-center text-background shadow-lg mb-4">

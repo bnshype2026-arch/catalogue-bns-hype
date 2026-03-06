@@ -17,13 +17,7 @@ export const Catalogue = () => {
     const brandFilter = searchParams.get('brand') || '';
     const sortOption = (searchParams.get('sort') as any) || 'newest';
 
-    const setSearchQuery = (val: string) => {
-        const newParams = new URLSearchParams(searchParams);
-        if (val) newParams.set('q', val);
-        else newParams.delete('q');
-        newParams.set('page', '1'); // Reset page on filter change
-        setSearchParams(newParams, { replace: true });
-    };
+    const categoryFilter = searchParams.get('category') || '';
 
     const setCategoryFilter = (val: string) => {
         const newParams = new URLSearchParams(searchParams);
@@ -174,20 +168,8 @@ export const Catalogue = () => {
 
     return (
         <div className="space-y-8 animate-fade-in">
-            {/* Minimalist Header & Controls (Dark Monochrome) */}
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between glass-dark p-6 rounded-2xl border border-white/10 shadow-premium relative z-10">
-                <div className="relative w-full md:max-w-md">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Search size={18} className="text-zinc-500" />
-                    </div>
-                    <input
-                        type="text"
-                        placeholder="Search by SKU or Product Name..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="block w-full pl-11 pr-4 py-3 bg-zinc-900 border border-white/5 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all shadow-sm"
-                    />
-                </div>
+            {/* Minimalist Controls (Solid Dark) */}
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-end bg-zinc-950 p-6 rounded-2xl border border-white/10 shadow-premium relative z-10">
 
                 <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
                     {/* Category Filter */}
