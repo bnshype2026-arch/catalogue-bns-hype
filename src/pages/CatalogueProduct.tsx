@@ -6,6 +6,7 @@ import { formatIDR } from '../lib/utils';
 import { Loader2, ArrowLeft, ZoomIn, Plus, Minus, ShoppingCart, CheckCircle2 } from 'lucide-react';
 import { useStoreSettings } from '../features/catalogue/StoreSettingsContext';
 import { useBasket } from '../features/catalogue/BasketContext';
+import { useAuthStore } from '../features/auth/useAuthStore';
 
 export const CatalogueProduct = () => {
     const { id } = useParams<{ id: string }>();
@@ -19,6 +20,8 @@ export const CatalogueProduct = () => {
     const [quantity, setQuantity] = useState(1);
     const [addedToBasket, setAddedToBasket] = useState(false);
     const { addToBasket } = useBasket();
+    const user = useAuthStore(state => state.user);
+    const isPutus = user?.user_metadata?.role === 'putus';
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isZoomed) return;
@@ -157,11 +160,7 @@ export const CatalogueProduct = () => {
                 {/* Product Details */}
                 <div className="flex flex-col">
                     <div className="mb-4 flex flex-wrap gap-2">
-                        {product.brand && (
-                            <span className="inline-block px-3 py-1 bg-muted text-foreground font-medium text-xs rounded-md">
-                                {product.brand}
-                            </span>
-                        )}
+                        {/* Brand hidden */}
                         {product.category && (
                             <span className="inline-block px-3 py-1 bg-muted text-muted-foreground font-medium text-xs rounded-md">
                                 {product.category}
@@ -199,42 +198,44 @@ export const CatalogueProduct = () => {
                     </div>
 
                     <div className="mt-auto pt-8 space-y-4">
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden h-14 bg-white">
-                                <button
-                                    onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
-                                    className="px-4 hover:bg-slate-50 text-slate-500 transition-colors"
-                                >
-                                    <Minus size={18} />
-                                </button>
-                                <div className="w-12 text-center text-lg font-bold tabular-nums">
-                                    {quantity}
+                        {isPutus && (
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden h-14 bg-white">
+                                    <button
+                                        onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                                        className="px-4 hover:bg-slate-50 text-slate-500 transition-colors"
+                                    >
+                                        <Minus size={18} />
+                                    </button>
+                                    <div className="w-12 text-center text-lg font-bold tabular-nums">
+                                        {quantity}
+                                    </div>
+                                    <button
+                                        onClick={() => setQuantity(prev => prev + 1)}
+                                        className="px-4 hover:bg-slate-50 text-slate-500 transition-colors"
+                                    >
+                                        <Plus size={18} />
+                                    </button>
                                 </div>
                                 <button
-                                    onClick={() => setQuantity(prev => prev + 1)}
-                                    className="px-4 hover:bg-slate-50 text-slate-500 transition-colors"
+                                    onClick={handleAddToBasket}
+                                    className={`flex-[2] flex items-center justify-center gap-2 font-bold py-4 rounded-xl transition shadow-premium active:scale-[0.98] ${addedToBasket ? 'bg-emerald-500 text-white' : 'bg-zinc-950 text-white hover:bg-zinc-800'
+                                        }`}
                                 >
-                                    <Plus size={18} />
+                                    {addedToBasket ? (
+                                        <>
+                                            <CheckCircle2 size={20} />
+                                            Added to Basket
+                                        </>
+                                    ) : (
+                                        <>
+                                            <ShoppingCart size={20} />
+                                            Add to Basket
+                                        </>
+                                    )}
                                 </button>
                             </div>
-                            <button
-                                onClick={handleAddToBasket}
-                                className={`flex-[2] flex items-center justify-center gap-2 font-bold py-4 rounded-xl transition shadow-premium active:scale-[0.98] ${addedToBasket ? 'bg-emerald-500 text-white' : 'bg-zinc-950 text-white hover:bg-zinc-800'
-                                    }`}
-                            >
-                                {addedToBasket ? (
-                                    <>
-                                        <CheckCircle2 size={20} />
-                                        Added to Basket
-                                    </>
-                                ) : (
-                                    <>
-                                        <ShoppingCart size={20} />
-                                        Add to Basket
-                                    </>
-                                )}
-                            </button>
-                        </div>
+                        )}
 
                         {settings?.whatsapp_number && (
                             <a

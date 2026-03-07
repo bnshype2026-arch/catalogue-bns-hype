@@ -3,6 +3,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom'
 import { ShoppingBag, Menu, X, Instagram, Info, Home, Tag, Search, ShoppingCart } from 'lucide-react'
 import { useStoreSettings } from '../../features/catalogue/StoreSettingsContext'
 import { useBasket } from '../../features/catalogue/BasketContext'
+import { useAuthStore } from '../../features/auth/useAuthStore'
 import { supabase } from '../../lib/supabase'
 import type { Program } from '../../types/program'
 import { BackgroundParticles } from '../BackgroundParticles'
@@ -11,6 +12,8 @@ export const CatalogueLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
     const { settings } = useStoreSettings();
     const { totalCount } = useBasket();
+    const user = useAuthStore(state => state.user);
+    const isPutus = user?.user_metadata?.role === 'putus';
     const [animateBasket, setAnimateBasket] = useState(false);
     const location = useLocation();
     const [activePrograms, setActivePrograms] = useState<Program[]>([]);
@@ -99,21 +102,23 @@ export const CatalogueLayout = () => {
                         <Info size={18} />
                         About Us
                     </Link>
-                    <Link
-                        to="/basket"
-                        onClick={() => setIsSidebarOpen(false)}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${location.pathname === '/basket' ? 'bg-white text-zinc-950' : 'text-zinc-400 hover:bg-white/5 hover:text-white'}`}
-                    >
-                        <div className="relative">
-                            <ShoppingCart size={18} />
-                            {totalCount > 0 && (
-                                <span className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white">
-                                    {totalCount}
-                                </span>
-                            )}
-                        </div>
-                        My Basket
-                    </Link>
+                    {isPutus && (
+                        <Link
+                            to="/basket"
+                            onClick={() => setIsSidebarOpen(false)}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${location.pathname === '/basket' ? 'bg-white text-zinc-950' : 'text-zinc-400 hover:bg-white/5 hover:text-white'}`}
+                        >
+                            <div className="relative">
+                                <ShoppingCart size={18} />
+                                {totalCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white">
+                                        {totalCount}
+                                    </span>
+                                )}
+                            </div>
+                            My Basket
+                        </Link>
+                    )}
 
                     {activePrograms.length > 0 && (
                         <div className="pt-4 pb-2">
@@ -184,19 +189,21 @@ export const CatalogueLayout = () => {
                         </Link>
                     </div>
 
-                    {/* Right: Basket Button */}
+                    {/* Right: Basket Button - Restricted to 'putus' */}
                     <div className="flex justify-end items-center">
-                        <Link
-                            to="/basket"
-                            className={`p-2 relative flex items-center justify-center hover:bg-black/5 rounded-lg transition-all group ${animateBasket ? 'scale-125' : 'scale-100'}`}
-                        >
-                            <ShoppingCart size={24} className={`text-black group-hover:scale-110 transition-transform ${animateBasket ? 'text-indigo-600' : 'text-black'}`} />
-                            {totalCount > 0 && (
-                                <span className={`absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-black text-[10px] font-bold text-white border-2 border-white transition-transform ${animateBasket ? 'scale-110' : 'scale-100'}`}>
-                                    {totalCount}
-                                </span>
-                            )}
-                        </Link>
+                        {isPutus && (
+                            <Link
+                                to="/basket"
+                                className={`p-2 relative flex items-center justify-center hover:bg-black/5 rounded-lg transition-all group ${animateBasket ? 'scale-125' : 'scale-100'}`}
+                            >
+                                <ShoppingCart size={24} className={`text-black group-hover:scale-110 transition-transform ${animateBasket ? 'text-indigo-600' : 'text-black'}`} />
+                                {totalCount > 0 && (
+                                    <span className={`absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-black text-[10px] font-bold text-white border-2 border-white transition-transform ${animateBasket ? 'scale-110' : 'scale-100'}`}>
+                                        {totalCount}
+                                    </span>
+                                )}
+                            </Link>
+                        )}
                     </div>
                 </div>
             </header>

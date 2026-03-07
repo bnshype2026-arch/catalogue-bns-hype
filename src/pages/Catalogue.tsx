@@ -6,6 +6,7 @@ import { formatIDR } from '../lib/utils';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useBasket } from '../features/catalogue/BasketContext';
 import { Plus, Minus, ShoppingCart, CheckCircle2 } from 'lucide-react';
+import { useAuthStore } from '../features/auth/useAuthStore';
 
 export const Catalogue = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -15,6 +16,8 @@ export const Catalogue = () => {
     const { addToBasket } = useBasket();
     const [quantities, setQuantities] = useState<Record<string, number>>({});
     const [addedProducts, setAddedProducts] = useState<Set<string>>(new Set());
+    const user = useAuthStore(state => state.user);
+    const isPutus = user?.user_metadata?.role === 'putus';
 
     // Filters from URL
     const searchQuery = searchParams.get('q') || '';
@@ -223,20 +226,7 @@ export const Catalogue = () => {
                         </div>
                     </div>
 
-                    {/* Brand Filter */}
-                    <div className="relative w-full md:w-auto">
-                        <select
-                            value={brandFilter}
-                            onChange={(e) => setBrandFilter(e.target.value)}
-                            className="w-full md:w-auto appearance-none bg-zinc-900 border border-white/5 text-zinc-300 py-3 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/20 font-medium text-sm cursor-pointer shadow-sm hover:bg-zinc-800 transition-colors"
-                        >
-                            <option value="">All Brands</option>
-                            {brands.map(b => <option key={b} value={b}>{b}</option>)}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-zinc-500">
-                            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-                        </div>
-                    </div>
+                    {/* Brand Filter hidden from public */}
 
                     <div className="relative w-full md:w-auto flex items-center">
                         <div className="absolute left-3 pointer-events-none text-zinc-500">
@@ -306,12 +296,9 @@ export const Catalogue = () => {
 
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 text-xs font-mono text-slate-500 uppercase tracking-widest">
-                                        <span>{product.brand || 'BNS'}</span>
+                                        {/* Brand hidden */}
                                         {product.sku && (
-                                            <>
-                                                <span>•</span>
-                                                <span>{product.sku}</span>
-                                            </>
+                                            <span>{product.sku}</span>
                                         )}
                                     </div>
                                     <h3 className="font-display font-semibold text-foreground text-sm md:text-base leading-tight group-hover:underline underline-offset-4 decoration-border line-clamp-2">
@@ -330,51 +317,53 @@ export const Catalogue = () => {
                                         </div>
                                     </div>
 
-                                    {/* Add to Basket Controls */}
-                                    <div className="pt-3 flex items-center gap-2" onClick={e => e.stopPropagation()}>
-                                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden h-8">
-                                            <button
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    handleQuantityChange(product.id, -1);
-                                                }}
-                                                className="px-2 hover:bg-slate-50 text-slate-500 transition-colors"
-                                            >
-                                                <Minus size={12} />
-                                            </button>
-                                            <div className="w-8 text-center text-xs font-semibold tabular-nums">
-                                                {quantities[product.id] || 1}
+                                    {/* Add to Basket Controls - Restricted to 'putus' role */}
+                                    {isPutus && (
+                                        <div className="pt-3 flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                                            <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden h-8">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleQuantityChange(product.id, -1);
+                                                    }}
+                                                    className="px-2 hover:bg-slate-50 text-slate-500 transition-colors"
+                                                >
+                                                    <Minus size={12} />
+                                                </button>
+                                                <div className="w-8 text-center text-xs font-semibold tabular-nums">
+                                                    {quantities[product.id] || 1}
+                                                </div>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleQuantityChange(product.id, 1);
+                                                    }}
+                                                    className="px-2 hover:bg-slate-50 text-slate-500 transition-colors"
+                                                >
+                                                    <Plus size={12} />
+                                                </button>
                                             </div>
                                             <button
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    handleQuantityChange(product.id, 1);
-                                                }}
-                                                className="px-2 hover:bg-slate-50 text-slate-500 transition-colors"
-                                            >
-                                                <Plus size={12} />
-                                            </button>
-                                        </div>
-                                        <button
-                                            onClick={(e) => onAddToBasket(e, product)}
-                                            className={`flex-1 rounded-lg h-8 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${addedProducts.has(product.id)
+                                                onClick={(e) => onAddToBasket(e, product)}
+                                                className={`flex-1 rounded-lg h-8 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${addedProducts.has(product.id)
                                                     ? 'bg-emerald-500 text-white'
                                                     : 'bg-zinc-950 text-white hover:bg-zinc-800'
-                                                }`}
-                                        >
-                                            {addedProducts.has(product.id) ? (
-                                                <>
-                                                    <CheckCircle2 size={12} />
-                                                    Added
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <ShoppingCart size={12} />
-                                                    Add
-                                                </>
-                                            )}
-                                        </button>
-                                    </div>
+                                                    }`}
+                                            >
+                                                {addedProducts.has(product.id) ? (
+                                                    <>
+                                                        <CheckCircle2 size={12} />
+                                                        Added
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <ShoppingCart size={12} />
+                                                        Add
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </Link>
                         );

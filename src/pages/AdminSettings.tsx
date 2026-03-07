@@ -55,6 +55,7 @@ export const AdminSettings = () => {
                     offline_stores: settings.offline_stores,
                     social_links: settings.social_links,
                     marketplace_links: settings.marketplace_links,
+                    favicon_url: settings.favicon_url,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', 1);
@@ -210,6 +211,17 @@ export const AdminSettings = () => {
                                 placeholder="Write a short description about BNS HYPE..."
                             />
                             <p className="text-xs text-slate-500 mt-1">This will be displayed on the public About page.</p>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Favicon URL (Browser Tab Icon)</label>
+                            <input
+                                type="url"
+                                value={settings.favicon_url || ''}
+                                onChange={(e) => setSettings({ ...settings, favicon_url: e.target.value })}
+                                className="block w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                                placeholder="https://example.com/favicon.png"
+                            />
+                            <p className="text-xs text-slate-500 mt-1">Paste a URL to an image (PNG/ICO) to change your website's tab icon.</p>
                         </div>
                     </div>
                 </div>

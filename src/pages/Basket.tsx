@@ -20,7 +20,6 @@ export const Basket = () => {
         const fileName = `Product_Basket_${date}.xlsx`;
 
         const data = items.map(item => ({
-            'Brand': item.brand,
             'Barcode': item.barcode,
             'SKU': item.sku,
             'Product Name': item.name,
@@ -33,7 +32,6 @@ export const Basket = () => {
         XLSX.utils.book_append_sheet(wb, ws, 'Basket Items');
 
         const wscols = [
-            { wch: 20 }, // Brand
             { wch: 20 }, // Barcode
             { wch: 20 }, // SKU
             { wch: 40 }, // Product Name
@@ -48,8 +46,7 @@ export const Basket = () => {
     const filteredItems = useMemo(() => {
         return items.filter(item =>
             item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.brand.toLowerCase().includes(searchQuery.toLowerCase())
+            item.sku.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [items, searchQuery]);
 
@@ -135,7 +132,7 @@ export const Basket = () => {
                         <Search className="text-slate-400 mr-4" size={20} />
                         <input
                             type="text"
-                            placeholder="Filter items by name, SKU, or Brand..."
+                            placeholder="Filter items by name or SKU..."
                             value={searchQuery}
                             onChange={handleSearchChange}
                             className="bg-transparent border-none text-slate-900 focus:ring-0 w-full placeholder:text-slate-400 font-medium"
@@ -183,7 +180,6 @@ export const Basket = () => {
                                         </td>
                                         <td className="px-6 py-6 text-center text-slate-900">
                                             <div className="inline-flex flex-col items-center">
-                                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{item.brand || 'BNS'}</span>
                                                 <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200/50">{item.sku}</span>
                                             </div>
                                         </td>
@@ -251,7 +247,6 @@ export const Basket = () => {
                                     </div>
                                     <div className="flex flex-wrap gap-2 pt-1">
                                         <span className="text-[10px] font-black bg-slate-50 text-slate-500 px-2 py-1 rounded-lg border border-slate-100 tracking-wider uppercase">{item.sku}</span>
-                                        <span className="text-[10px] font-black text-indigo-600 tracking-widest uppercase py-1">{item.brand}</span>
                                     </div>
                                 </div>
                             </div>

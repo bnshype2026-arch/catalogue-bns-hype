@@ -34,5 +34,6 @@ export interface StoreSettings {
     }>;
     social_links: SocialLink[];
     marketplace_links: MarketplaceLink[];
+    favicon_url?: string | null;
     updated_at: string;
 }

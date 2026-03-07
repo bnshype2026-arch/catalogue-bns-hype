@@ -14,6 +14,7 @@ import { Basket } from './pages/Basket'
 import { StoreSettingsProvider } from './features/catalogue/StoreSettingsContext'
 import { BasketProvider } from './features/catalogue/BasketContext'
 import { PageTracker } from './features/catalogue/PageTracker'
+import { FaviconManager } from './components/FaviconManager'
 
 import { AdminDashboard } from './pages/AdminDashboard'
 
@@ -21,6 +22,7 @@ function App() {
   return (
     <StoreSettingsProvider>
       <BasketProvider>
+        <FaviconManager />
         <BrowserRouter>
           <PageTracker />
           <Routes>
@@ -28,7 +30,11 @@ function App() {
             <Route path="/" element={<CatalogueLayout />}>
               <Route index element={<Catalogue />} />
               <Route path="about" element={<About />} />
-              <Route path="basket" element={<Basket />} />
+              <Route path="basket" element={
+                <ProtectedRoute allowRoles={['putus']}>
+                  <Basket />
+                </ProtectedRoute>
+              } />
               <Route path="product/:id" element={<CatalogueProduct />} />
               <Route path="program/:id" element={<ProgramCatalogue />} />
             </Route>

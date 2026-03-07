@@ -3,8 +3,8 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuthStore } from './useAuthStore'
 import { Loader2 } from 'lucide-react'
 
-export const ProtectedRoute = () => {
-    const { session, isLoading, initialize } = useAuthStore()
+export const ProtectedRoute = ({ allowRoles, children }: { allowRoles?: string[], children?: React.ReactNode }) => {
+    const { session, user, isLoading, initialize } = useAuthStore()
     const location = useLocation()
 
     useEffect(() => {
@@ -24,7 +24,16 @@ export const ProtectedRoute = () => {
         return <Navigate to="/admin/login" state={{ from: location }} replace />
     }
 
-    return <Outlet />
+    // Check roles if specified
+    if (allowRoles && allowRoles.length > 0) {
+        const userRole = user?.user_metadata?.role;
+        if (!allowRoles.includes(userRole)) {
+            // If user doesn't have the role, redirect to home or somewhere safe
+            return <Navigate to="/" replace />
+        }
+    }
+
+    return children ? <>{children}</> : <Outlet />
 }
 
 export const PublicRoute = () => {
