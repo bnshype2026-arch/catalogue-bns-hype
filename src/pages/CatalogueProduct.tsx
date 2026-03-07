@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { ProductWithImages } from '../types/product';
 import { formatIDR } from '../lib/utils';
-import { Loader2, ArrowLeft, ZoomIn } from 'lucide-react';
+import { Loader2, ArrowLeft, ZoomIn, Plus, Minus, ShoppingCart, CheckCircle2 } from 'lucide-react';
 import { useStoreSettings } from '../features/catalogue/StoreSettingsContext';
+import { useBasket } from '../features/catalogue/BasketContext';
 
 export const CatalogueProduct = () => {
     const { id } = useParams<{ id: string }>();
@@ -15,6 +16,9 @@ export const CatalogueProduct = () => {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [isZoomed, setIsZoomed] = useState(false);
     const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
+    const [quantity, setQuantity] = useState(1);
+    const [addedToBasket, setAddedToBasket] = useState(false);
+    const { addToBasket } = useBasket();
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isZoomed) return;
@@ -52,6 +56,14 @@ export const CatalogueProduct = () => {
             console.error('Error fetching product details:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleAddToBasket = () => {
+        if (product) {
+            addToBasket(product, quantity);
+            setAddedToBasket(true);
+            setTimeout(() => setAddedToBasket(false), 2000);
         }
     };
 
@@ -186,20 +198,53 @@ export const CatalogueProduct = () => {
                         )}
                     </div>
 
-                    <div className="mt-auto pt-8 flex gap-4">
-                        {settings?.whatsapp_number ? (
+                    <div className="mt-auto pt-8 space-y-4">
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden h-14 bg-white">
+                                <button
+                                    onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                                    className="px-4 hover:bg-slate-50 text-slate-500 transition-colors"
+                                >
+                                    <Minus size={18} />
+                                </button>
+                                <div className="w-12 text-center text-lg font-bold tabular-nums">
+                                    {quantity}
+                                </div>
+                                <button
+                                    onClick={() => setQuantity(prev => prev + 1)}
+                                    className="px-4 hover:bg-slate-50 text-slate-500 transition-colors"
+                                >
+                                    <Plus size={18} />
+                                </button>
+                            </div>
+                            <button
+                                onClick={handleAddToBasket}
+                                className={`flex-[2] flex items-center justify-center gap-2 font-bold py-4 rounded-xl transition shadow-premium active:scale-[0.98] ${addedToBasket ? 'bg-emerald-500 text-white' : 'bg-zinc-950 text-white hover:bg-zinc-800'
+                                    }`}
+                            >
+                                {addedToBasket ? (
+                                    <>
+                                        <CheckCircle2 size={20} />
+                                        Added to Basket
+                                    </>
+                                ) : (
+                                    <>
+                                        <ShoppingCart size={20} />
+                                        Add to Basket
+                                    </>
+                                )}
+                            </button>
+                        </div>
+
+                        {settings?.whatsapp_number && (
                             <a
                                 href={`https://wa.me/${settings.whatsapp_number.replace(/[^0-9]/g, '')}?text=Hi! I am interested in purchasing ${product.name} (SKU: ${product.sku}). Is it still available?`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex-1 bg-foreground text-background font-bold py-4 rounded-xl hover:bg-zinc-800 transition shadow-premium hover:-translate-y-1 active:scale-[0.98] text-center"
+                                className="block w-full py-4 border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition text-center"
                             >
-                                Contact to Purchase
+                                Contact via WhatsApp
                             </a>
-                        ) : (
-                            <button disabled className="flex-1 bg-muted text-muted-foreground font-bold py-4 rounded-xl cursor-not-allowed">
-                                Contact Unavailable
-                            </button>
                         )}
                     </div>
                 </div>

@@ -4,12 +4,16 @@ import type { ProductWithImages } from '../types/product';
 import { Search, SlidersHorizontal, Loader2 } from 'lucide-react';
 import { formatIDR } from '../lib/utils';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useBasket } from '../features/catalogue/BasketContext';
+import { Plus, Minus, ShoppingCart } from 'lucide-react';
 
 export const Catalogue = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const [products, setProducts] = useState<ProductWithImages[]>([]);
     const [loading, setLoading] = useState(true);
+    const { addToBasket } = useBasket();
+    const [quantities, setQuantities] = useState<Record<string, number>>({});
 
     // Filters from URL
     const searchQuery = searchParams.get('q') || '';
@@ -165,6 +169,23 @@ export const Catalogue = () => {
         setPage(page + 1);
     };
 
+    const handleQuantityChange = (productId: string, delta: number) => {
+        setQuantities(prev => {
+            const current = prev[productId] || 1;
+            const next = Math.max(1, current + delta);
+            return { ...prev, [productId]: next };
+        });
+    };
+
+    const onAddToBasket = (e: React.MouseEvent, product: ProductWithImages) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const qty = quantities[product.id] || 1;
+        addToBasket(product, qty);
+        // Reset quantity for this product
+        setQuantities(prev => ({ ...prev, [product.id]: 1 }));
+    };
+
     return (
         <div className="space-y-8 animate-fade-in">
             {/* Minimalist Controls (Solid Dark) */}
@@ -280,15 +301,51 @@ export const Catalogue = () => {
                                     <h3 className="font-display font-semibold text-foreground text-sm md:text-base leading-tight group-hover:underline underline-offset-4 decoration-border line-clamp-2">
                                         {product.name}
                                     </h3>
-                                    <div className="pt-1 flex items-baseline gap-2">
-                                        {product.discount_price ? (
-                                            <>
-                                                <span className="font-bold text-slate-900">{formatIDR(product.discount_price)}</span>
-                                                <span className="text-xs md:text-sm text-red-500 line-through">{formatIDR(product.price)}</span>
-                                            </>
-                                        ) : (
-                                            <span className="font-bold text-slate-900">{formatIDR(product.price)}</span>
-                                        )}
+                                    <div className="pt-1 flex items-baseline justify-between gap-2">
+                                        <div className="flex items-baseline gap-2">
+                                            {product.discount_price ? (
+                                                <>
+                                                    <span className="font-bold text-slate-900">{formatIDR(product.discount_price)}</span>
+                                                    <span className="text-xs md:text-sm text-red-500 line-through">{formatIDR(product.price)}</span>
+                                                </>
+                                            ) : (
+                                                <span className="font-bold text-slate-900">{formatIDR(product.price)}</span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Add to Basket Controls */}
+                                    <div className="pt-3 flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden h-8">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleQuantityChange(product.id, -1);
+                                                }}
+                                                className="px-2 hover:bg-slate-50 text-slate-500 transition-colors"
+                                            >
+                                                <Minus size={12} />
+                                            </button>
+                                            <div className="w-8 text-center text-xs font-semibold tabular-nums">
+                                                {quantities[product.id] || 1}
+                                            </div>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleQuantityChange(product.id, 1);
+                                                }}
+                                                className="px-2 hover:bg-slate-50 text-slate-500 transition-colors"
+                                            >
+                                                <Plus size={12} />
+                                            </button>
+                                        </div>
+                                        <button
+                                            onClick={(e) => onAddToBasket(e, product)}
+                                            className="flex-1 bg-zinc-950 text-white rounded-lg h-8 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider hover:bg-zinc-800 transition-colors"
+                                        >
+                                            <ShoppingCart size={12} />
+                                            Add
+                                        </button>
                                     </div>
                                 </div>
                             </Link>
