@@ -102,6 +102,14 @@ export const CatalogueLayout = () => {
                         <Info size={18} />
                         About Us
                     </Link>
+                    <Link
+                        to="/brand-guidance"
+                        onClick={() => setIsSidebarOpen(false)}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${location.pathname === '/brand-guidance' ? 'bg-white text-zinc-950' : 'text-zinc-400 hover:bg-white/5 hover:text-white'}`}
+                    >
+                        <Tag size={18} />
+                        Brand Guidance
+                    </Link>
                     {isPutus && (
                         <Link
                             to="/basket"

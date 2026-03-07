@@ -110,7 +110,7 @@ export const Basket = () => {
                     <div className="flex flex-wrap items-center gap-4">
                         <button
                             onClick={clearBasket}
-                            className="flex items-center gap-2 px-6 py-4 bg-white border border-red-100 text-red-500 font-bold rounded-xl hover:bg-red-50 transition-all text-xs uppercase tracking-widest shadow-sm"
+                            className="flex items-center gap-2 px-6 py-4 bg-white border border-red-100 text-red-500 hover:text-black hover:bg-red-50 transition-all text-xs uppercase tracking-widest shadow-sm font-bold rounded-xl"
                         >
                             <Trash size={16} />
                             Clear All
@@ -207,7 +207,7 @@ export const Basket = () => {
                                         <td className="px-6 py-6 text-right">
                                             <button
                                                 onClick={() => removeFromBasket(item.sku)}
-                                                className="p-3 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"
+                                                className="p-3 text-red-500 hover:text-black hover:bg-red-50 rounded-2xl transition-all"
                                             >
                                                 <Trash2 size={20} />
                                             </button>
@@ -240,7 +240,7 @@ export const Basket = () => {
                                         <h3 className="font-bold text-slate-900 leading-tight truncate">{item.name}</h3>
                                         <button
                                             onClick={() => removeFromBasket(item.sku)}
-                                            className="p-2 text-slate-300 hover:text-red-500 transition-colors ml-2"
+                                            className="p-2 text-red-500 hover:text-black transition-colors ml-2"
                                         >
                                             <Trash2 size={18} />
                                         </button>
@@ -318,6 +318,6 @@ export const Basket = () => {
                     </p>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };

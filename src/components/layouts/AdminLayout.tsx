@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Package, LogOut, Settings, Tag, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Package, LogOut, Settings, Tag, Menu, X, FileText } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { BackgroundParticles } from '../BackgroundParticles'
 
@@ -58,6 +58,17 @@ export const AdminLayout = () => {
                     >
                         <Tag size={18} />
                         Programs
+                    </NavLink>
+
+                    <NavLink
+                        to="/admin/brand-guidance"
+                        className={({ isActive }) =>
+                            `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive ? 'bg-primary text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                            }`
+                        }
+                    >
+                        <FileText size={18} />
+                        Brand Guidance
                     </NavLink>
 
                     <NavLink
@@ -135,6 +146,18 @@ export const AdminLayout = () => {
                     >
                         <Tag size={18} />
                         Programs
+                    </NavLink>
+
+                    <NavLink
+                        to="/admin/brand-guidance"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={({ isActive }) =>
+                            `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive ? 'bg-primary text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                            }`
+                        }
+                    >
+                        <FileText size={18} />
+                        Brand Guidance
                     </NavLink>
 
                     <NavLink

@@ -11,6 +11,8 @@ import { ProgramCatalogue } from './pages/ProgramCatalogue'
 import { AdminSettings } from './pages/AdminSettings'
 import { About } from './pages/About'
 import { Basket } from './pages/Basket'
+import { BrandGuidance } from './pages/BrandGuidance'
+import { AdminBrandGuidance } from './pages/AdminBrandGuidance'
 import { StoreSettingsProvider } from './features/catalogue/StoreSettingsContext'
 import { BasketProvider } from './features/catalogue/BasketContext'
 import { PageTracker } from './features/catalogue/PageTracker'
@@ -30,6 +32,7 @@ function App() {
             <Route path="/" element={<CatalogueLayout />}>
               <Route index element={<Catalogue />} />
               <Route path="about" element={<About />} />
+              <Route path="brand-guidance" element={<BrandGuidance />} />
               <Route path="basket" element={
                 <ProtectedRoute allowRoles={['putus']}>
                   <Basket />
@@ -50,6 +53,7 @@ function App() {
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="programs" element={<AdminPrograms />} />
+                <Route path="brand-guidance" element={<AdminBrandGuidance />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
             </Route>
