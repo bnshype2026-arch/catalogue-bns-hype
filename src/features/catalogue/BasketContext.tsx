@@ -54,6 +54,7 @@ export const BasketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                         : item
                 );
             }
+            const primaryImage = product.images?.find((img: any) => img.display_order === 0) || product.images?.[0];
             const newItem: BasketItem = {
                 id: product.id,
                 name: product.name,
@@ -61,7 +62,7 @@ export const BasketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 barcode: product.barcode || '',
                 brand: product.brand || '',
                 category: product.category || '',
-                image_url: product.images?.[0]?.image_url || null,
+                image_url: primaryImage?.image_url || null,
                 quantity: quantity
             };
             return [...prev, newItem];

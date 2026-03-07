@@ -145,80 +145,82 @@ export const Basket = () => {
 
                 {/* Desktop Table View */}
                 <div className="hidden md:block bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-sm">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-black border-b border-black">
-                                <th className="px-8 py-6 text-[10px] font-black text-white uppercase tracking-[0.3em]">Item Details</th>
-                                <th className="px-8 py-6 text-[10px] font-black text-white uppercase tracking-[0.3em] text-center">Reference</th>
-                                <th className="px-8 py-6 text-[10px] font-black text-white uppercase tracking-[0.3em] text-center">Quantity</th>
-                                <th className="px-8 py-6 text-[10px] font-black text-white uppercase tracking-[0.3em] text-right">Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {paginatedItems.map((item) => (
-                                <tr key={item.sku} className="hover:bg-slate-50/50 transition-colors group">
-                                    <td className="px-8 py-6">
-                                        <div className="flex items-center gap-6">
-                                            <div className="w-20 h-20 bg-slate-100 rounded-2xl overflow-hidden shadow-inner flex-shrink-0 border border-slate-200 flex items-center justify-center p-2">
-                                                {item.image_url ? (
-                                                    <img
-                                                        src={supabase.storage.from('product-images').getPublicUrl(item.image_url).data.publicUrl}
-                                                        alt={item.name}
-                                                        className="w-full h-full object-contain mix-blend-multiply transition-transform group-hover:scale-110"
-                                                    />
-                                                ) : (
-                                                    <Package className="text-slate-300" size={32} />
-                                                )}
-                                            </div>
-                                            <div className="flex flex-col min-w-0">
-                                                <span className="font-bold text-slate-900 text-lg mb-1 group-hover:text-indigo-600 transition-colors truncate">{item.name}</span>
-                                                <div className="flex items-center gap-3">
-                                                    <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded">{item.category || 'Standard'}</span>
-                                                    <span className="text-slate-200 font-light">|</span>
-                                                    <span className="text-[10px] font-mono text-slate-500">BC: {item.barcode || 'N/A'}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-8 py-6 text-center text-slate-900">
-                                        <div className="inline-flex flex-col items-center">
-                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{item.brand || 'BNS'}</span>
-                                            <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200/50">{item.sku}</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-8 py-6">
-                                        <div className="flex items-center justify-center">
-                                            <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
-                                                <button
-                                                    onClick={() => updateQuantity(item.sku, item.quantity - 1)}
-                                                    className="p-2 px-4 hover:bg-white text-slate-400 hover:text-indigo-600 transition-colors"
-                                                >
-                                                    <Minus size={14} />
-                                                </button>
-                                                <div className="w-12 text-center font-bold text-slate-900 tabular-nums">
-                                                    {item.quantity}
-                                                </div>
-                                                <button
-                                                    onClick={() => updateQuantity(item.sku, item.quantity + 1)}
-                                                    className="p-2 px-4 hover:bg-white text-slate-400 hover:text-indigo-600 transition-colors"
-                                                >
-                                                    <Plus size={14} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-8 py-6 text-right">
-                                        <button
-                                            onClick={() => removeFromBasket(item.sku)}
-                                            className="p-3 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"
-                                        >
-                                            <Trash2 size={20} />
-                                        </button>
-                                    </td>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse min-w-[300px]">
+                            <thead>
+                                <tr className="bg-black border-b border-black">
+                                    <th className="px-6 py-6 text-[10px] font-black text-white uppercase tracking-[0.3em]">Item Details</th>
+                                    <th className="px-6 py-6 text-[10px] font-black text-white uppercase tracking-[0.3em] text-center">Reference</th>
+                                    <th className="px-6 py-6 text-[10px] font-black text-white uppercase tracking-[0.3em] text-center">Quantity</th>
+                                    <th className="px-6 py-6 text-[10px] font-black text-white uppercase tracking-[0.3em] text-right">Delete</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {paginatedItems.map((item) => (
+                                    <tr key={item.sku} className="hover:bg-slate-50/50 transition-colors group">
+                                        <td className="px-6 py-6">
+                                            <div className="flex items-center gap-6 min-w-[280px]">
+                                                <div className="w-16 h-16 bg-slate-100 rounded-xl overflow-hidden shadow-inner flex-shrink-0 border border-slate-200 flex items-center justify-center p-2">
+                                                    {item.image_url ? (
+                                                        <img
+                                                            src={supabase.storage.from('product-images').getPublicUrl(item.image_url).data.publicUrl}
+                                                            alt={item.name}
+                                                            className="w-full h-full object-contain mix-blend-multiply transition-transform group-hover:scale-110"
+                                                        />
+                                                    ) : (
+                                                        <Package className="text-slate-300" size={24} />
+                                                    )}
+                                                </div>
+                                                <div className="flex flex-col min-w-0">
+                                                    <span className="font-bold text-slate-900 text-base mb-0.5 group-hover:text-indigo-600 transition-colors truncate">{item.name}</span>
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded">{item.category || 'Standard'}</span>
+                                                        <span className="text-slate-200 font-light">|</span>
+                                                        <span className="text-[10px] font-mono text-slate-500">BC: {item.barcode || 'N/A'}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-6 text-center text-slate-900">
+                                            <div className="inline-flex flex-col items-center">
+                                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{item.brand || 'BNS'}</span>
+                                                <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200/50">{item.sku}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-6">
+                                            <div className="flex items-center justify-center">
+                                                <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+                                                    <button
+                                                        onClick={() => updateQuantity(item.sku, item.quantity - 1)}
+                                                        className="p-2 px-3 hover:bg-white text-slate-400 hover:text-indigo-600 transition-colors"
+                                                    >
+                                                        <Minus size={12} />
+                                                    </button>
+                                                    <div className="w-10 text-center font-bold text-slate-900 tabular-nums text-sm">
+                                                        {item.quantity}
+                                                    </div>
+                                                    <button
+                                                        onClick={() => updateQuantity(item.sku, item.quantity + 1)}
+                                                        className="p-2 px-3 hover:bg-white text-slate-400 hover:text-indigo-600 transition-colors"
+                                                    >
+                                                        <Plus size={12} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-6 text-right">
+                                            <button
+                                                onClick={() => removeFromBasket(item.sku)}
+                                                className="p-3 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"
+                                            >
+                                                <Trash2 size={20} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 {/* Mobile Card View */}
