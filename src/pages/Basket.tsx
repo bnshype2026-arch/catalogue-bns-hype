@@ -13,10 +13,11 @@ export const Basket = () => {
         const fileName = `Product_Basket_${date}.xlsx`;
 
         const data = items.map(item => ({
-            'Product Name': item.name,
-            'SKU': item.sku,
-            'Barcode': item.barcode,
             'Brand': item.brand,
+            'Barcode': item.barcode,
+            'SKU': item.sku,
+            'Product Name': item.name,
+            'Category': item.category,
             'Quantity': item.quantity
         }));
 
@@ -26,10 +27,11 @@ export const Basket = () => {
 
         // Set column widths
         const wscols = [
-            { wch: 40 }, // Product Name
-            { wch: 20 }, // SKU
+            { wch: 20 }, // Brand
             { wch: 20 }, // Barcode
-            { wch: 15 }, // Brand
+            { wch: 20 }, // SKU
+            { wch: 40 }, // Product Name
+            { wch: 20 }, // Category
             { wch: 10 }  // Quantity
         ];
         ws['!cols'] = wscols;

@@ -6,6 +6,7 @@ export interface BasketItem {
     sku: string;
     barcode: string;
     brand: string;
+    category: string;
     quantity: number;
 }
 
@@ -58,6 +59,7 @@ export const BasketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 sku: product.sku || '',
                 barcode: product.barcode || '',
                 brand: product.brand || '',
+                category: product.category || '',
                 quantity: quantity
             };
             return [...prev, newItem];

@@ -11,6 +11,7 @@ export const CatalogueLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
     const { settings } = useStoreSettings();
     const { totalCount } = useBasket();
+    const [animateBasket, setAnimateBasket] = useState(false);
     const location = useLocation();
     const [activePrograms, setActivePrograms] = useState<Program[]>([]);
 
@@ -41,6 +42,14 @@ export const CatalogueLayout = () => {
         };
         fetchPrograms();
     }, []);
+
+    useEffect(() => {
+        if (totalCount > 0) {
+            setAnimateBasket(true);
+            const timer = setTimeout(() => setAnimateBasket(false), 300);
+            return () => clearTimeout(timer);
+        }
+    }, [totalCount]);
 
     return (
         <div className="min-h-screen flex flex-col bg-background relative selection:bg-black selection:text-white">
@@ -179,11 +188,11 @@ export const CatalogueLayout = () => {
                     <div className="flex justify-end items-center">
                         <Link
                             to="/basket"
-                            className="p-2 relative flex items-center justify-center hover:bg-black/5 rounded-lg transition-colors group"
+                            className={`p-2 relative flex items-center justify-center hover:bg-black/5 rounded-lg transition-all group ${animateBasket ? 'scale-125' : 'scale-100'}`}
                         >
-                            <ShoppingCart size={24} className="text-black group-hover:scale-110 transition-transform" />
+                            <ShoppingCart size={24} className={`text-black group-hover:scale-110 transition-transform ${animateBasket ? 'text-indigo-600' : 'text-black'}`} />
                             {totalCount > 0 && (
-                                <span className="absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-black text-[10px] font-bold text-white border-2 border-white animate-pop">
+                                <span className={`absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-black text-[10px] font-bold text-white border-2 border-white transition-transform ${animateBasket ? 'scale-110' : 'scale-100'}`}>
                                     {totalCount}
                                 </span>
                             )}
