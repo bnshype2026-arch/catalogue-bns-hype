@@ -46,7 +46,7 @@ export const AdminLogin = () => {
                     <div className="w-16 h-16 bg-foreground rounded-2xl mx-auto flex items-center justify-center text-background shadow-lg mb-4">
                         <Lock size={32} />
                     </div>
-                    <h1 className="text-2xl font-display font-bold tracking-tight text-foreground">Admin Portal</h1>
+                    <h1 className="text-2xl font-display font-bold tracking-tight text-foreground">Partner Portal</h1>
                     <p className="text-sm text-muted-foreground mt-2">Sign in to manage the BNS Hype catalogue</p>
                 </div>
 
