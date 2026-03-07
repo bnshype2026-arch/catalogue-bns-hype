@@ -1,33 +1,60 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Loader2, Plus, Trash2, FileText, Upload, Tag, ChevronRight, GripVertical } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Upload, Tag, ChevronRight, GripVertical, X } from 'lucide-react';
 import type { BrandGuidance as BrandGuidanceType, BrandGuidanceFile } from '../types/brandGuidance';
 
 export const AdminBrandGuidance = () => {
     const [brands, setBrands] = useState<BrandGuidanceType[]>([]);
+    const [existingProductBrands, setExistingProductBrands] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedBrand, setSelectedBrand] = useState<BrandGuidanceType | null>(null);
     const [newBrandName, setNewBrandName] = useState('');
     const [isAddingBrand, setIsAddingBrand] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         fetchBrands();
+        fetchExistingProductBrands();
     }, []);
+
+    const fetchExistingProductBrands = async () => {
+        try {
+            const { data } = await supabase
+                .from('products')
+                .select('brand')
+                .not('brand', 'is', null);
+
+            if (data) {
+                const uniqueBrands = Array.from(new Set(data.map(p => p.brand))).sort();
+                setExistingProductBrands(uniqueBrands);
+            }
+        } catch (err) {
+            console.error('Error fetching existing brands:', err);
+        }
+    };
 
     const fetchBrands = async () => {
         setLoading(true);
+        setError(null);
         try {
-            const { data, error } = await supabase
+            const { data, error: fetchError } = await supabase
                 .from('brand_guidance')
                 .select('*, files:brand_guidance_files(*)')
                 .order('display_order', { ascending: true });
 
-            if (error) throw error;
+            if (fetchError) {
+                if (fetchError.code === 'PGRST116' || fetchError.message.includes('not found')) {
+                    setError('Database tables missing. Please run the SQL script in walkthrough.md');
+                } else {
+                    throw fetchError;
+                }
+            }
             setBrands(data || []);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching brands:', error);
+            setError(error.message || 'Failed to fetch brands');
         } finally {
             setLoading(false);
         }
@@ -166,6 +193,16 @@ export const AdminBrandGuidance = () => {
 
     return (
         <div className="space-y-6 max-w-6xl">
+            {error && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-4 text-red-700 animate-fade-in">
+                    <X className="flex-shrink-0 mt-0.5" size={18} />
+                    <div>
+                        <p className="font-bold text-sm">Action Required</p>
+                        <p className="text-sm opacity-90">{error}</p>
+                    </div>
+                </div>
+            )}
+
             <div className="flex justify-between items-end">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900">Brand Guidance</h1>
@@ -190,14 +227,24 @@ export const AdminBrandGuidance = () => {
                     <div className="divide-y divide-slate-100 max-h-[600px] overflow-y-auto">
                         {isAddingBrand && (
                             <form onSubmit={handleAddBrand} className="p-4 bg-indigo-50/50 space-y-3">
-                                <input
-                                    autoFocus
-                                    type="text"
-                                    value={newBrandName}
-                                    onChange={(e) => setNewBrandName(e.target.value)}
-                                    placeholder="Brand Name..."
-                                    className="w-full px-3 py-2 border border-indigo-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
-                                />
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase tracking-wider text-indigo-400 mb-1">Brand Name</label>
+                                    <input
+                                        autoFocus
+                                        type="text"
+                                        list="product-brands"
+                                        value={newBrandName}
+                                        onChange={(e) => setNewBrandName(e.target.value)}
+                                        placeholder="Enter brand name..."
+                                        className="w-full px-3 py-2 border border-indigo-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    />
+                                    <datalist id="product-brands">
+                                        {existingProductBrands.map(b => (
+                                            <option key={b} value={b} />
+                                        ))}
+                                    </datalist>
+                                    <p className="text-[10px] text-indigo-400 mt-2 italic">You can select an existing product brand from the list or type a new one.</p>
+                                </div>
                                 <div className="flex gap-2">
                                     <button
                                         type="submit"
