@@ -1,7 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import * as XLSX from 'xlsx';
-import { X, Upload, Loader2, FileDown, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { X, Loader2, FileDown, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
 interface BatchVisibilityFormProps {
     onClose: () => void;
@@ -17,7 +17,7 @@ export const BatchVisibilityForm = ({ onClose, onSuccess }: BatchVisibilityFormP
         errors: { row: number, message: string }[];
     } | null>(null);
 
-    const fileInputRef = useRef<HTMLInputElement>(null);
+
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, targetMode: 'show' | 'hide') => {
         const file = e.target.files?.[0];
